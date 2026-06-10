@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Các use case AI của mình</title>
+<!-- fork: pitchdeck (forest/cream + pill chips, Fraunces + Be Vietnam Pro) · engine từ starter-deck · rationale: khán giả mix tech+non-tech + hybrid (nói trực tiếp + để lại đọc PDF) → cream ấm dễ đọc, serif tạo gravitas, vài slide dark làm bookend/nhịp · VN copy đã qua review Gemini + Codex -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --forest:#1f3a2e; --cream:#f3ecd8; --sage:#b5c4a4; --sage-deep:#8aa078;
+    --ink:#1a2a20; --cream-soft:#e9dfbf; --muted:#5a6a5a;
+    --rule:rgba(26,42,32,.14); --rule-d:rgba(243,236,216,.18);
+    --display:'Fraunces',Georgia,serif; --body:'Be Vietnam Pro',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+  body{background:var(--cream);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  .slide{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;padding:7vh 8vw;position:relative;overflow:hidden}
+  .slide.dark{background:var(--forest);color:var(--cream)}
+  .slide.cream{background:var(--cream);color:var(--ink)}
+  .wrap{max-width:1080px;margin:0 auto;width:100%}
+  .slide-num{position:absolute;top:3.2vh;right:4vw;font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;opacity:.5}
+  .kicker{font-family:var(--mono);font-size:.76rem;text-transform:uppercase;letter-spacing:.2em;margin-bottom:1.3rem;opacity:.85}
+  .slide.cream .kicker{color:var(--sage-deep)}
+  .slide.dark .kicker{color:var(--sage)}
+  h1{font-family:var(--display);font-weight:600;font-size:clamp(1.8rem,4.4vw,3.25rem);line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
+  .lede{font-size:clamp(1rem,1.7vw,1.28rem);line-height:1.55;margin-top:1.4rem;max-width:46ch;opacity:.86}
+  .nowrap{white-space:nowrap}
+
+  /* pill keyword chip — the signature */
+  .pill{display:inline-block;padding:.04em .32em;border-radius:6px;font-weight:600;line-height:1.12;white-space:nowrap}
+  .slide.cream .pill{background:var(--sage-deep);color:#fff}
+  .slide.dark .pill{background:var(--sage);color:var(--ink)}
+
+  /* 3-card row */
+  .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:2.4rem}
+  .card{border-radius:12px;padding:1.5rem 1.4rem;border:1px solid var(--rule)}
+  .slide.cream .card{background:#fff7e6}
+  .slide.dark .card{background:rgba(255,255,255,.05);border-color:var(--rule-d)}
+  .card .ic{font-size:1.7rem;margin-bottom:.6rem;line-height:1}
+  .card .t{font-family:var(--display);font-weight:600;font-size:1.12rem;line-height:1.2}
+  .card .d{font-size:.9rem;line-height:1.45;margin-top:.5rem;opacity:.8}
+
+  /* before/after */
+  .cmp2{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-top:2.2rem}
+  .cmp2 .col{border-radius:12px;padding:1.5rem;border:1px solid var(--rule)}
+  .slide.cream .cmp2 .col{background:#fff7e6}
+  .cmp2 .before{opacity:.72}
+  .cmp2 .after{border-color:var(--sage-deep);box-shadow:0 0 0 1px var(--sage-deep) inset}
+  .cmp2 .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+  .cmp2 .big{font-family:var(--display);font-weight:700;font-size:1.85rem;margin-top:.4rem;line-height:1.05}
+  .cmp2 .d{font-size:.88rem;opacity:.8;margin-top:.55rem;line-height:1.45}
+
+  /* numbered steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:2.3rem}
+  .step .n{font-family:var(--display);font-weight:700;font-size:1.7rem;color:var(--sage)}
+  .step .t{font-weight:600;margin-top:.25rem;font-size:1.02rem}
+  .step .d{font-size:.86rem;opacity:.82;margin-top:.3rem;line-height:1.4}
+
+  /* big number */
+  .big-num{font-family:var(--display);font-weight:700;font-size:clamp(4.5rem,17vw,12rem);line-height:.86;letter-spacing:-.03em;color:var(--cream)}
+  .note-small{font-family:var(--mono);font-size:.72rem;opacity:.6;margin-top:.7rem}
+
+  figure{margin-top:2rem}
+  svg{width:100%;height:auto;display:block;max-width:780px;margin:0 auto}
+  .svg-cap{font-family:var(--mono);font-size:.72rem;opacity:.62;margin-top:.8rem;text-align:center}
+
+  /* stage strip (speaker layer — S to toggle) */
+  .stage-strip{position:absolute;left:0;right:0;bottom:0;font-family:var(--mono);font-size:.78rem;padding:.7rem 8vw;letter-spacing:.01em;line-height:1.5}
+  .slide.cream .stage-strip{background:#e6ead6;border-top:1px solid var(--rule);color:var(--muted)}
+  .slide.dark .stage-strip{background:#152b21;border-top:1px solid var(--rule-d);color:var(--sage)}
+  .stage-strip b{color:var(--sage-deep)}
+  .slide.dark .stage-strip b{color:var(--cream)}
+  body.hide-stage .stage-strip{display:none}
+
+  /* progress bar */
+  .bar{position:fixed;bottom:0;left:0;right:0;height:3px;background:rgba(26,42,32,.1);z-index:50}
+  .bar>i{display:block;height:100%;background:var(--sage-deep);width:0;transition:width .25s}
+
+  /* grid overview (Esc / G) */
+  body.grid-mode{scroll-snap-type:none;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;background:#cdd5bd}
+  body.grid-mode .slide{min-height:auto;aspect-ratio:16/9;border-radius:8px;padding:3vh 2.4vw;cursor:pointer;justify-content:center;overflow:hidden}
+  body.grid-mode .stage-strip,body.grid-mode .bar{display:none}
+  body.grid-mode h1{font-size:1rem;line-height:1.15}
+  body.grid-mode .cards3,body.grid-mode .cmp2,body.grid-mode .steps,body.grid-mode figure,body.grid-mode .lede{display:none}
+
+  @media (max-width:640px){.cards3,.cmp2,.steps{grid-template-columns:1fr}}
+  @media print{html{scroll-snap-type:none}.slide{min-height:auto;page-break-after:always}.stage-strip,.bar{display:none}}
+</style>
+</head>
+<body>
+
+<!-- type: hero -->
+<section class="slide dark" id="slide-cover">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Chia sẻ · Các use case AI của mình</div>
+    <h1>AI không <span class="pill">thay</span> tôi —<br/>nó gánh phần <span class="pill">cơ học</span> để tôi làm phần phán đoán.</h1>
+    <p class="lede">Một dev làm một mình. Tôi không giỏi hơn nhờ AI — tôi chỉ đẩy được phần lặp đi lặp lại sang cho nó, và giữ lại phần cần suy nghĩ.</p>
+  </div>
+  <div class="stage-strip">▸ Beat 1 · ~1 phút. <b>Mở bằng chính mình:</b> "AI không làm tôi thông minh hơn, nó dọn phần cơ học." · (điền tên/role của bạn ở kicker nếu muốn) · then →</div>
+</section>
+
+<!-- type: situation -->
+<section class="slide cream" id="slide-situation">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Bối cảnh</div>
+    <h1>Một mình ôm <span class="pill">code</span>, tài liệu, và cả <span class="pill">slide</span> — phần cơ học nuốt hết thời gian.</h1>
+    <div class="cards3">
+      <div class="card"><div class="ic">⌨️</div><div class="t">Viết &amp; đọc code</div><div class="d">Tính năng, sửa bug, hiểu codebase, viết test.</div></div>
+      <div class="card"><div class="ic">📄</div><div class="t">Tài liệu &amp; họp</div><div class="d">Đọc spec, ghi chú họp, research, lục lại context cũ.</div></div>
+      <div class="card"><div class="ic">📊</div><div class="t">Slide &amp; báo cáo</div><div class="d">Dựng deck, viết update, trình bày cho người khác.</div></div>
+    </div>
+  </div>
+  <div class="stage-strip">▸ Beat 2 · ~1.5 phút (S). <b>Đặt cảnh:</b> liệt kê 3 mảng việc mình ôm một mình. Khán giả gật — ai làm một mình cũng vậy. · then →</div>
+</section>
+
+<!-- type: complication -->
+<section class="slide cream" id="slide-complication">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Vấn đề</div>
+    <h1>Việc <span class="pill">lặp lại</span> không scale: hiểu repo lạ, viết test, đọc cả đống doc, dựng deck — mỗi thứ ngốn hàng giờ.</h1>
+    <figure>
+      <svg viewBox="0 0 760 210" role="img" aria-label="biểu đồ thời gian đổ vào việc cơ học">
+        <g font-family="Be Vietnam Pro, sans-serif" font-size="14" fill="#1a2a20">
+          <text x="0" y="24" font-family="JetBrains Mono, monospace" font-size="12" fill="#5a6a5a">GIỜ ĐỔ VÀO MỖI VIỆC (cảm nhận)</text>
+          <g transform="translate(0,40)">
+            <text x="0" y="14">Hiểu repo lạ</text>
+            <rect x="150" y="2" width="520" height="16" rx="4" fill="#8aa078"/>
+          </g>
+          <g transform="translate(0,72)">
+            <text x="0" y="14">Viết test</text>
+            <rect x="150" y="2" width="430" height="16" rx="4" fill="#8aa078"/>
+          </g>
+          <g transform="translate(0,104)">
+            <text x="0" y="14">Đọc tài liệu/họp</text>
+            <rect x="150" y="2" width="560" height="16" rx="4" fill="#8aa078"/>
+          </g>
+          <g transform="translate(0,136)">
+            <text x="0" y="14">Dựng slide</text>
+            <rect x="150" y="2" width="470" height="16" rx="4" fill="#8aa078"/>
+          </g>
+          <text x="150" y="186" font-family="JetBrains Mono, monospace" font-size="12.5" fill="#1f3a2e">Điểm chung: tốn nhiều giờ nhất, nhưng gần như không cần sáng tạo.</text>
+        </g>
+      </svg>
+      <div class="svg-cap">Phần ngốn thời gian nhất lại là phần ít cần đầu óc nhất — đó là chỗ AI nên vào.</div>
+    </figure>
+  </div>
+  <div class="stage-strip">▸ Beat 3 · ~1.5 phút (C). <b>Nhấn nghịch lý:</b> việc tốn nhiều thời gian nhất = việc cơ học nhất → đó chính là chỗ giao cho AI. · then →</div>
+</section>
+
+<!-- type: map / signpost -->
+<section class="slide dark" id="slide-map">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Bản đồ</div>
+    <h1>3 chỗ tôi giao cho AI <span class="pill">gánh</span> — và phần tôi <span class="pill">giữ lại</span>.</h1>
+    <div class="cards3">
+      <div class="card"><div class="ic">①</div><div class="t">Việc code</div><div class="d">Giao cho một đội agent chạy, tôi duyệt từng cổng.</div></div>
+      <div class="card"><div class="ic">②</div><div class="t">Tài liệu &amp; đa phương tiện</div><div class="d">AI đọc folder/PDF/video, trả về kết luận.</div></div>
+      <div class="card"><div class="ic">③</div><div class="t">Tự build công cụ</div><div class="d">Đóng gói việc lặp thành skill dùng lại mãi.</div></div>
+    </div>
+    <p class="lede"><b style="color:var(--sage)">Phần tôi giữ lại:</b> ra quyết định, phán đoán đúng–sai và thiết kế.</p>
+  </div>
+  <div class="stage-strip">▸ Beat 4 · ~1 phút. <b>Signpost 3 use case.</b> Nói thẳng: AI gánh phần cơ học, tôi giữ phần quyết định. · then →</div>
+</section>
+
+<!-- type: uc1 intro -->
+<section class="slide cream" id="slide-uc1">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Use case 1 · Việc code</div>
+    <h1>Giao việc code cho một <span class="pill">đội agent</span>: scout → plan → code → test → review, tôi chỉ duyệt.</h1>
+    <figure>
+      <svg viewBox="0 0 760 150" role="img" aria-label="pipeline scout plan code test review">
+        <g font-family="JetBrains Mono, monospace" font-size="12.5">
+          <g>
+            <rect x="0"   y="40" width="120" height="46" rx="8" fill="#fff7e6" stroke="#8aa078"/>
+            <text x="60"  y="68" text-anchor="middle" fill="#1a2a20">scout</text>
+            <rect x="160" y="40" width="120" height="46" rx="8" fill="#fff7e6" stroke="#8aa078"/>
+            <text x="220" y="68" text-anchor="middle" fill="#1a2a20">plan</text>
+            <rect x="320" y="40" width="120" height="46" rx="8" fill="#fff7e6" stroke="#8aa078"/>
+            <text x="380" y="68" text-anchor="middle" fill="#1a2a20">code</text>
+            <rect x="480" y="40" width="120" height="46" rx="8" fill="#fff7e6" stroke="#8aa078"/>
+            <text x="540" y="68" text-anchor="middle" fill="#1a2a20">test</text>
+            <rect x="640" y="40" width="120" height="46" rx="8" fill="#fff7e6" stroke="#8aa078"/>
+            <text x="700" y="68" text-anchor="middle" fill="#1a2a20">review</text>
+          </g>
+          <g stroke="#8aa078" stroke-width="2" fill="#8aa078">
+            <line x1="120" y1="63" x2="158" y2="63"/><polygon points="160,63 150,58 150,68"/>
+            <line x1="280" y1="63" x2="318" y2="63"/><polygon points="320,63 310,58 310,68"/>
+            <line x1="440" y1="63" x2="478" y2="63"/><polygon points="480,63 470,58 470,68"/>
+            <line x1="600" y1="63" x2="638" y2="63"/><polygon points="640,63 630,58 630,68"/>
+          </g>
+          <text x="380" y="124" text-anchor="middle" font-size="13" fill="#1f3a2e">↑ mỗi bước là một agent chuyên việc — tôi <tspan font-weight="700">duyệt từng cổng</tspan>, không gõ từng dòng</text>
+        </g>
+      </svg>
+    </figure>
+  </div>
+  <div class="stage-strip">▸ Beat 5 · ~2 phút (R1). <b>Giải thích:</b> không phải một AI làm tất — nhiều agent chuyên việc, tôi duyệt ở từng cổng. · then →</div>
+</section>
+
+<!-- type: uc1 example (before/after) -->
+<section class="slide cream" id="slide-uc1-ex">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Use case 1 · Ví dụ</div>
+    <h1>Hiểu một repo lạ: từ <span class="pill">nửa ngày</span> dò tay → <span class="pill">vài phút</span> có bản đồ + chỗ cần sửa.</h1>
+    <div class="cmp2">
+      <div class="col before">
+        <div class="tag">Trước</div>
+        <div class="big">~nửa ngày</div>
+        <div class="d">Mở từng file, lần theo import, đoán kiến trúc, ghi chú tay trước khi dám sửa.</div>
+      </div>
+      <div class="col after">
+        <div class="tag">Với agent</div>
+        <div class="big">~vài phút</div>
+        <div class="d">Agent quét song song → trả về bản đồ file, pattern và đúng chỗ cần sửa. Tôi đọc kết luận, không dò tay.</div>
+      </div>
+    </div>
+    <p class="lede note-small">Ví dụ thật ngay buổi làm slide này: 2 agent quét xong toàn bộ setup và tìm đúng file engine trong khoảng một phút.</p>
+  </div>
+  <div class="stage-strip">▸ Beat 6 · ~1.5 phút. <b>⚠️ Thay số thật của bạn vào tiêu đề.</b> Fallback: scout 2 agent ~1 phút buổi này. Đọc to cả hai con số để họ nghe khác biệt. · then →</div>
+</section>
+
+<!-- type: uc2 intro (funnel) -->
+<section class="slide cream" id="slide-uc2">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Use case 2 · Tài liệu &amp; đa phương tiện</div>
+    <h1>Đổ nguyên folder tài liệu, PDF, video vào AI → nhận <span class="pill">kết luận</span>, khỏi đọc thủ công từng cái.</h1>
+    <figure>
+      <svg viewBox="0 0 760 170" role="img" aria-label="folder hỗn hợp đi vào AI ra một kết luận">
+        <g font-family="JetBrains Mono, monospace" font-size="12">
+          <g transform="translate(0,30)">
+            <rect x="0" y="0"  width="150" height="32" rx="6" fill="#fff7e6" stroke="#cbb88a"/><text x="12" y="21" fill="#1a2a20">📄 PDF / spec</text>
+            <rect x="0" y="42" width="150" height="32" rx="6" fill="#fff7e6" stroke="#cbb88a"/><text x="12" y="63" fill="#1a2a20">🎞️ video 2,5 giờ</text>
+            <rect x="0" y="84" width="150" height="32" rx="6" fill="#fff7e6" stroke="#cbb88a"/><text x="12" y="105" fill="#1a2a20">📝 ghi chú / doc</text>
+          </g>
+          <g stroke="#8aa078" stroke-width="2" fill="#8aa078">
+            <line x1="158" y1="76" x2="300" y2="76"/><polygon points="302,76 292,71 292,81"/>
+          </g>
+          <rect x="305" y="48" width="150" height="74" rx="10" fill="#1f3a2e"/>
+          <text x="380" y="90" text-anchor="middle" fill="#f3ecd8" font-size="15" font-family="Fraunces, serif" font-weight="600">AI đọc hết</text>
+          <g stroke="#8aa078" stroke-width="2" fill="#8aa078">
+            <line x1="455" y1="85" x2="500" y2="85"/><polygon points="502,85 492,80 492,90"/>
+          </g>
+          <g transform="translate(505,34)">
+            <rect x="0" y="0" width="255" height="104" rx="10" fill="#fff7e6" stroke="#8aa078"/>
+            <text x="16" y="26" fill="#1f3a2e" font-family="Fraunces, serif" font-weight="600" font-size="14">KẾT LUẬN</text>
+            <text x="16" y="50" fill="#1a2a20">• điểm chính &amp; takeaways</text>
+            <text x="16" y="72" fill="#1a2a20">• chỗ đáng nghi / thiếu bằng chứng</text>
+            <text x="16" y="94" fill="#1a2a20">• việc nên làm tiếp</text>
+          </g>
+        </g>
+      </svg>
+    </figure>
+  </div>
+  <div class="stage-strip">▸ Beat 7 · ~1.5 phút (R2). <b>Mở rộng ngoài code:</b> AI đọc giúp tài liệu, ghi chú họp, video — tôi đọc kết luận. · then →</div>
+</section>
+
+<!-- type: uc2 example (real: folder-insight-critic) -->
+<section class="slide cream" id="slide-uc2-ex">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Use case 2 · Ví dụ thật</div>
+    <h1>Skill <span class="pill">folder-insight-critic</span>: một folder có video 2,5 giờ → bản tóm tắt + phản biện trong một lượt.</h1>
+    <div class="cards3">
+      <div class="card"><div class="ic">📂</div><div class="t">Input</div><div class="d">Cả folder: video 2,5 giờ, slide và tài liệu để lẫn lộn.</div></div>
+      <div class="card"><div class="ic">🤖</div><div class="t">Gemini đọc</div><div class="d">Xem hết video và đọc tài liệu, không cần tôi ngồi tua.</div></div>
+      <div class="card"><div class="ic">🇻🇳</div><div class="t">Output</div><div class="d">Kết luận tiếng Việt: takeaways, phản biện, chỗ còn thiếu.</div></div>
+    </div>
+    <p class="lede">Tôi tự viết skill này. Việc "xem 2,5 giờ video rồi tóm tắt" bây giờ là <b style="color:var(--sage-deep)">một lệnh</b>, không phải một buổi chiều.</p>
+  </div>
+  <div class="stage-strip">▸ Beat 8 · ~1.5 phút. <b>Ví dụ thật:</b> skill tôi tự viết, phân tích nguyên folder workshop (có video 2,5 giờ) ra kết luận tiếng Việt. · then →</div>
+</section>
+
+<!-- type: uc3 intro (compound) -->
+<section class="slide cream" id="slide-uc3">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Use case 3 · Tự build công cụ</div>
+    <h1>Đóng gói việc lặp thành <span class="pill">skill tái dùng</span> — làm một lần, dùng mãi, chạy cả hai runtime.</h1>
+    <figure>
+      <svg viewBox="0 0 760 160" role="img" aria-label="workflow đóng thành skill rồi tái dùng nhiều lần">
+        <g font-family="JetBrains Mono, monospace" font-size="12.5">
+          <rect x="0" y="56" width="170" height="48" rx="8" fill="#fff7e6" stroke="#8aa078"/>
+          <text x="85" y="84" text-anchor="middle" fill="#1a2a20">việc lặp</text>
+          <g stroke="#8aa078" stroke-width="2" fill="#8aa078"><line x1="170" y1="80" x2="212" y2="80"/><polygon points="214,80 204,75 204,85"/></g>
+          <rect x="216" y="50" width="170" height="60" rx="10" fill="#1f3a2e"/>
+          <text x="301" y="78" text-anchor="middle" fill="#f3ecd8" font-family="Fraunces, serif" font-weight="600" font-size="15">SKILL</text>
+          <text x="301" y="98" text-anchor="middle" fill="#b5c4a4" font-size="11">đóng gói một lần</text>
+          <g stroke="#8aa078" stroke-width="2" fill="#8aa078">
+            <line x1="386" y1="80" x2="430" y2="50"/><polygon points="432,49 421,49 427,58"/>
+            <line x1="386" y1="80" x2="430" y2="80"/><polygon points="432,80 422,75 422,85"/>
+            <line x1="386" y1="80" x2="430" y2="110"/><polygon points="432,111 421,111 427,102"/>
+          </g>
+          <g fill="#1a2a20">
+            <rect x="436" y="36" width="120" height="26" rx="6" fill="#e9dfbf"/><text x="446" y="54">dùng lần 2</text>
+            <rect x="436" y="67" width="120" height="26" rx="6" fill="#e9dfbf"/><text x="446" y="85">lần 3</text>
+            <rect x="436" y="98" width="120" height="26" rx="6" fill="#e9dfbf"/><text x="446" y="116">lần n…</text>
+          </g>
+          <text x="600" y="84" font-family="Fraunces, serif" font-weight="700" font-size="22" fill="#8aa078">vốn ↑</text>
+        </g>
+      </svg>
+    </figure>
+  </div>
+  <div class="stage-strip">▸ Beat 9 · ~2 phút (R3). <b>Đỉnh:</b> không chỉ DÙNG AI — DẠY nó việc của tôi thành skill. Mỗi lần làm là vốn tích lũy. · then →</div>
+</section>
+
+<!-- type: uc3 example (real + meta: this deck) -->
+<section class="slide dark" id="slide-uc3-ex">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Use case 3 · Ví dụ thật (meta)</div>
+    <h1>Chính <span class="pill">deck này</span>: được tạo bằng skill tôi build sáng nay từ phương pháp của workshop.</h1>
+    <figure>
+      <svg viewBox="0 0 760 170" role="img" aria-label="vòng lặp phương pháp tới skill tới deck">
+        <g font-family="JetBrains Mono, monospace" font-size="12.5">
+          <rect x="20" y="20" width="720" height="120" rx="12" fill="none" stroke="#b5c4a4" stroke-opacity=".5"/>
+          <rect x="40" y="40" width="680" height="26" rx="6" fill="#152b21"/>
+          <circle cx="58" cy="53" r="5" fill="#d98a6a"/><circle cx="76" cy="53" r="5" fill="#cbb86a"/><circle cx="94" cy="53" r="5" fill="#8aa078"/>
+          <text x="120" y="57" fill="#b5c4a4">quy267.github.io/ai-use-cases/slides.html</text>
+          <g fill="#f3ecd8">
+            <text x="60"  y="104" font-family="Fraunces, serif" font-weight="600" font-size="15">phương pháp</text>
+            <text x="245" y="104" font-family="Fraunces, serif" font-weight="600" font-size="15">→ skill</text>
+            <text x="360" y="104" font-family="Fraunces, serif" font-weight="600" font-size="15">→ deck này</text>
+            <text x="540" y="104" font-family="Fraunces, serif" font-weight="600" font-size="15">→ trình bày</text>
+          </g>
+          <text x="380" y="130" text-anchor="middle" fill="#b5c4a4" font-size="11.5">slide bạn đang xem chính là output của use case này</text>
+        </g>
+      </svg>
+    </figure>
+  </div>
+  <div class="stage-strip">▸ Beat 10 · ~1.5 phút. <b>Punch line:</b> "slide bạn đang xem chính là output." Skill làm slide tôi viết hôm nay tạo ra nó. · then →</div>
+</section>
+
+<!-- type: synthesis (big number) -->
+<section class="slide dark" id="slide-synthesis">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Mấu chốt</div>
+    <div class="big-num">~80%</div>
+    <h1 style="margin-top:1rem">AI gánh phần <span class="pill">cơ học</span> → tôi dồn sức vào <span class="pill">phán đoán</span> &amp; thiết kế; càng dùng càng tích vốn.</h1>
+    <p class="note-small">"~80%" là ước lượng cá nhân, không phải số liệu đo đạc — điểm chính là phần việc được dồn về đúng chỗ của con người.</p>
+  </div>
+  <div class="stage-strip">▸ Beat 11 · ~1 phút. <b>Through-line.</b> Nói rõ con số là cảm nhận. Nhấn: AI dọn phần máy, tôi lo phần người. · then →</div>
+</section>
+
+<!-- type: close / CTA -->
+<section class="slide dark" id="slide-close">
+  <span class="slide-num"></span>
+  <div class="wrap">
+    <div class="kicker">Bắt đầu</div>
+    <h1>Chọn <span class="pill">một việc lặp</span> bạn ghét nhất — giao cho AI ngay tuần này.</h1>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div class="t">Chọn một việc lặp</div><div class="d">Việc bạn làm đi làm lại mà chán nhất.</div></div>
+      <div class="step"><div class="n">2</div><div class="t">Giao cho AI làm thử</div><div class="d">Một lần. Xem nó gánh được tới đâu.</div></div>
+      <div class="step"><div class="n">3</div><div class="t">Ổn → đóng skill</div><div class="d">Gói lại để lần sau khỏi nghĩ lại.</div></div>
+    </div>
+    <p class="lede" style="margin-top:1.8rem">Cảm ơn 🙏 — deck: <b style="color:var(--sage)">quy267.github.io/ai-use-cases</b> · hỏi đáp thoải mái.</p>
+  </div>
+  <div class="stage-strip">▸ Beat 12 · ~1 phút. <b>Đóng:</b> kêu gọi hành động nhỏ &amp; cụ thể. Để link/QR. Cảm ơn + mở Q&amp;A.</div>
+</section>
+
+<div class="bar"><i id="bar"></i></div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const total=slides.length;
+  // auto slide numbering + derived total
+  slides.forEach((s,i)=>{const n=s.querySelector('.slide-num'); if(n) n.textContent=String(i+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');});
+
+  // hash sync by EXACT id (match s.id, never assume numeric ids)
+  function idx(){const h=location.hash.slice(1);return slides.findIndex(s=>s.id===h);}
+  function go(i){i=Math.max(0,Math.min(total-1,i));slides[i].scrollIntoView();history.replaceState(null,'','#'+slides[i].id);updateBar(i);}
+  function current(){let best=0,bd=1e9;slides.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<bd){bd=d;best=i;}});return best;}
+  function updateBar(i){const b=document.getElementById('bar');if(b)b.style.width=((i)/(total-1)*100)+'%';}
+
+  if(location.hash){const i=idx();if(i>=0)setTimeout(()=>go(i),0);}
+  window.addEventListener('scroll',()=>updateBar(current()),{passive:true});
+  updateBar(0);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(current()+1);}
+    else if(e.key==='ArrowUp'||e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(current()-1);}
+    else if(e.key==='Escape'||e.key.toLowerCase()==='g'){document.body.classList.toggle('grid-mode');}
+    else if(e.key.toLowerCase()==='s'){document.body.classList.toggle('hide-stage');}
+    else if(e.key.toLowerCase()==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+  });
+  // click a slide in grid mode to jump to it
+  slides.forEach((s,i)=>s.addEventListener('click',()=>{if(document.body.classList.contains('grid-mode')){document.body.classList.remove('grid-mode');go(i);}}));
+})();
+</script>
+</body>
+</html>
